@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Agent Class 1일차</title>
+  <title>AI Agent Class</title>
   
   <!-- Pretendard Font CDN -->
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -41,6 +41,12 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    
+    /* 간단한 모달 스크롤바 CSS */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #d8b4fe; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #c084fc; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans selection:bg-violet-200 selection:text-violet-900 flex flex-col md:flex-row min-h-screen">
@@ -77,37 +83,40 @@
   <!-- Main Content Area -->
   <main class="flex-1 w-full min-w-0 mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 pb-32">
     
-    <div class="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <!-- 강사 메모장 레이아웃 (공통 영역으로 상단 분리 배치) -->
+    <div id="instructor-memo-container" class="rounded-xl border border-violet-200 bg-violet-100/50 p-6 shadow-sm relative overflow-hidden mb-12">
+      <!-- 장식용 포인트 -->
+      <div class="absolute left-0 top-0 bottom-0 w-1 bg-violet-500"></div>
       
-      <!-- 강사 메모장 레이아웃 (일차별 최상단) -->
-      <div id="instructor-memo-container" class="rounded-xl border border-violet-200 bg-violet-100/50 p-6 shadow-sm relative overflow-hidden mb-12">
-        <!-- 장식용 포인트 -->
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-violet-500"></div>
-        
-        <div class="flex items-center justify-between mb-3 relative z-10">
-          <h3 class="font-bold text-violet-900 flex items-center gap-2">
-            <i data-lucide="megaphone" class="w-5 h-5 text-violet-600"></i> 
-            강사 공지 및 메모
-          </h3>
-          <!-- 메모 수정 버튼 (클릭 영역 및 우선순위 최상위 보장) -->
-          <button id="edit-memo-btn" type="button" onclick="toggleMemoEdit()" class="hidden items-center justify-center gap-1.5 text-xs font-bold bg-white border border-violet-300 text-violet-700 px-4 py-2 rounded-lg hover:bg-violet-50 transition-colors shadow-sm relative z-[100] cursor-pointer select-none">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5 pointer-events-none"></i> 메모 수정
-          </button>
-        </div>
-        
-        <!-- 표시 영역 -->
-        <div id="instructor-memo-display" class="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed relative z-10">아직 등록된 메모가 없습니다.</div>
-        
-        <!-- 수정 영역 -->
-        <div id="instructor-memo-edit-area" class="hidden mt-3 relative z-[100]">
-          <textarea id="instructor-memo-input" placeholder="강의 중 전달할 메모나 공지를 입력하세요." class="w-full h-32 p-4 border border-violet-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white resize-none shadow-inner"></textarea>
-          <div class="flex justify-end gap-2 mt-3">
-            <button type="button" onclick="toggleMemoEdit()" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer select-none">취소</button>
-            <button type="button" onclick="saveInstructorMemo()" class="px-4 py-2 rounded-lg text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors shadow-sm cursor-pointer select-none">저장하기</button>
-          </div>
+      <div class="flex items-center justify-between mb-3 relative z-10">
+        <h3 class="font-bold text-violet-900 flex items-center gap-2">
+          <i data-lucide="megaphone" class="w-5 h-5 text-violet-600"></i> 
+          강사 공지 및 메모
+        </h3>
+        <!-- 메모 수정 버튼 (클릭 영역 및 우선순위 최상위 보장) -->
+        <button id="edit-memo-btn" type="button" onclick="toggleMemoEdit()" class="hidden items-center justify-center gap-1.5 text-xs font-bold bg-white border border-violet-300 text-violet-700 px-4 py-2 rounded-lg hover:bg-violet-50 transition-colors shadow-sm relative z-[100] cursor-pointer select-none">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5 pointer-events-none"></i> 메모 수정
+        </button>
+      </div>
+      
+      <!-- 표시 영역 -->
+      <div id="instructor-memo-display" class="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed relative z-10">아직 등록된 메모가 없습니다.</div>
+      
+      <!-- 수정 영역 -->
+      <div id="instructor-memo-edit-area" class="hidden mt-3 relative z-[100]">
+        <textarea id="instructor-memo-input" placeholder="강의 중 전달할 메모나 공지를 입력하세요." class="w-full h-32 p-4 border border-violet-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white resize-none shadow-inner"></textarea>
+        <div class="flex justify-end gap-2 mt-3">
+          <button type="button" onclick="toggleMemoEdit()" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer select-none">취소</button>
+          <button type="button" onclick="saveInstructorMemo()" class="px-4 py-2 rounded-lg text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors shadow-sm cursor-pointer select-none">저장하기</button>
         </div>
       </div>
+    </div>
 
+    <!-- ============================================== -->
+    <!-- Day 1 Content Wrapper (기본 설정 및 설치) -->
+    <!-- ============================================== -->
+    <div id="content-day1" class="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
       <!-- Title Section -->
       <div class="mb-10 text-center sm:text-left">
         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 mb-4">
@@ -470,7 +479,6 @@
               Git 설치
             </h3>
             
-            <!-- CodeBlock Template -->
             <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 bg-gray-900 shadow-sm">
               <div class="flex items-center justify-between bg-gray-800 px-4 py-2">
                 <span class="text-xs font-medium text-gray-400">POWERSHELL</span>
@@ -768,32 +776,383 @@
                   <span class="copied-state flex items-center gap-1.5 hidden"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i>복사됨</span>
                 </button>
               </div>
-              <div class="overflow-x-auto p-4 text-sm font-mono text-green-400"><pre><code>claude</code></pre></div>
+              <div class="overflow-x-auto p-4 text-sm font-mono text-green-400"><pre><code>claude --dangerously-skip-permissions</code></pre></div>
             </div>
             
             <div id="windows-path-error" class="mt-4 pt-4 border-t border-gray-100">
               <p class="text-xs font-bold text-red-600 mb-2">오류 해결: 'claude is not recognized'</p>
-              <p class="text-xs text-gray-600 mb-2">환경 변수(PATH) 설정이 적용되지 않은 경우입니다. 터미널(PowerShell)에 아래 코드를 입력하세요.</p>
+              <p class="text-xs text-gray-600 mb-2">환경 변수(PATH) 설정이 적용되지 않은 경우입니다. 터미널(PowerShell)에 아래 코드를 복사 후 실행하세요.</p>
               
-              <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 bg-gray-900 shadow-sm">
+              <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 bg-gray-900 shadow-sm relative">
                 <div class="flex items-center justify-between bg-gray-800 px-4 py-2">
-                  <span class="text-xs font-medium text-gray-400">임시 PATH 적용</span>
-                  <button onclick="copyCode(this)" class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-300 transition hover:bg-gray-700 hover:text-white">
-                    <span class="default-state flex items-center gap-1.5"><i data-lucide="copy" class="w-3.5 h-3.5"></i>복사</span>
-                    <span class="copied-state flex items-center gap-1.5 hidden"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i>복사됨</span>
+                  <span class="text-xs font-medium text-gray-400">환경 변수 및 경로 복구 (전체 코드 복사됨)</span>
+                  <button type="button" onclick="copyHiddenCode(this, 'hidden-path-script')" class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-300 transition hover:bg-gray-700 hover:text-white cursor-pointer z-20">
+                    <span class="default-state flex items-center gap-1.5"><i data-lucide="copy" class="w-3.5 h-3.5 pointer-events-none"></i>복사</span>
+                    <span class="copied-state flex items-center gap-1.5 hidden"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400 pointer-events-none"></i>복사됨</span>
                   </button>
                 </div>
-                <div class="overflow-x-auto p-4 text-sm font-mono text-green-400"><pre><code>$env:PATH += ";$env:APPDATA\npm"</code></pre></div>
+                <div class="overflow-x-auto p-4 text-sm font-mono text-green-400">
+                  <pre><code>$env:PATH += ";$env:APPDATA\npm" <span class="text-gray-500 italic"># (복사 버튼 클릭 시 전체 스크립트 복사됨)</span></code></pre>
+                </div>
+                <!-- 숨겨진 전체 복사 스크립트 영역 -->
+                <textarea id="hidden-path-script" class="hidden absolute w-0 h-0 opacity-0 pointer-events-none">
+# 1. 추가할 경로 리스트 초기화
+$pathsToAdd = @()
+
+# 2. Node.js & Git 기본 경로 탐색
+$basePaths = @("C:\Program Files\nodejs", "C:\Program Files\Git\cmd")
+foreach ($bp in $basePaths) {
+    if (Test-Path $bp) { $pathsToAdd += $bp }
+}
+
+# 3. Claude Code 네이티브 설치 경로 (핵심)
+$claudeNativePath = Join-Path $env:USERPROFILE ".local\bin"
+$claudeAppDataPath = "$env:LOCALAPPDATA\Programs\claude-code"
+
+if (Test-Path $claudeNativePath) { $pathsToAdd += $claudeNativePath }
+if (Test-Path $claudeAppDataPath) { $pathsToAdd += $claudeAppDataPath }
+
+# 4. npm 관련 경로 (Global Prefix)
+try {
+    $npmPrefix = (npm config get prefix).Trim()
+    if ($npmPrefix -and (Test-Path $npmPrefix)) { $pathsToAdd += $npmPrefix }
+} catch {}
+
+$defaultNpmPath = "$env:APPDATA\npm"
+if (Test-Path $defaultNpmPath) { $pathsToAdd += $defaultNpmPath }
+
+# --- 경로 등록 로직 (중복 제거 및 영구 적용) ---
+$pathsToAdd = $pathsToAdd | Select-Object -Unique
+
+# 시스템의 현재 사용자 PATH 불러오기
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+$currentUserPaths = $userPath.Split(';', [System.StringSplitOptions]::RemoveEmptyEntries)
+
+# 없는 경로만 필터링
+$newPaths = $pathsToAdd | Where-Object { $currentUserPaths -notcontains $_ }
+
+if ($newPaths.Count -gt 0) {
+    $updatedPath = (($currentUserPaths + $newPaths) | Select-Object -Unique) -join ';'
+    [Environment]::SetEnvironmentVariable("Path", $updatedPath, "User")
+    Write-Host "PATH 환경 변수에 저장 완료:" -ForegroundColor Green
+    $newPaths | ForEach-Object { Write-Host " - $_" }
+} else {
+    Write-Host "모든 경로가 이미 등록되어 있습니다." -ForegroundColor Gray
+}
+
+# --- 현재 터미널 세션에 즉시 반영 ---
+$currentSessionPaths = $env:Path.Split(';', [System.StringSplitOptions]::RemoveEmptyEntries)
+$env:Path = (($currentSessionPaths + $pathsToAdd) | Select-Object -Unique) -join ';'
+
+# --- 검증 및 경로 분석 로직 ---
+Write-Host "`n[설치 상태 및 버전 확인]" -ForegroundColor Cyan
+Write-Host "--------------------------------"
+
+# Claude 상세 분석
+$claudeCheck = where.exe claude 2>$null
+if ($claudeCheck) {
+    $firstClaude = ($claudeCheck | Select-Object -First 1)
+    Write-Host "Claude 실행 위치: $firstClaude"
+    if ($firstClaude -like "*\.local\bin\*") {
+        Write-Host "현재 '네이티브(Native)' 버전 사용 중" -ForegroundColor Yellow
+    } else {
+        Write-Host "현재 'npm' 패키지 버전 사용 중" -ForegroundColor Gray
+    }
+    try { 
+        $version = claude --version
+        Write-Host "Claude 버전: $version" 
+    } catch {}
+} else {
+    Write-Host "Claude를 찾을 수 없습니다." -ForegroundColor Red
+}
+
+Write-Host "--------------------------------"
+Write-Host "Node.js: $(try{node -v}catch{'N/A'})"
+Write-Host "npm:     $(try{npm -v}catch{'N/A'})"
+Write-Host "Git:     $(try{git --version}catch{'N/A'})"
+Write-Host "--------------------------------"</textarea>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-    </div>
+    </div> <!-- End of content-day1 -->
+
+
+    <!-- ============================================== -->
+    <!-- Day 2 Content Wrapper (메모리 제어 / 툴) -->
+    <!-- ============================================== -->
+    <div id="content-day2" class="hidden space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      <!-- Title Section -->
+      <div class="mb-10 text-center sm:text-left">
+        <span class="rounded-full bg-violet-800 px-3 py-1 text-xs font-bold text-white tracking-wider mb-4 inline-block">BASIC 02</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 mb-4">
+          Claude 에이전트 메모리와 파일/폴더 제어
+        </h1>
+        <p class="text-lg text-gray-600 max-w-3xl leading-relaxed">
+          VS Code 터미널 환경에서 에이전트의 정체성을 부여하고, 파일을 읽고 쓰며, 시스템 명령어를 제어하는 필수 툴들을 실습합니다.
+        </p>
+      </div>
+
+      <!-- Section 1: 에이전트 메모리 제어 (CLAUDE.md, /init, /memory) -->
+      <section>
+        <div class="mb-6 flex items-center gap-3 border-b border-gray-200 pb-4">
+          <span class="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">핵심 파일</span>
+          <h2 class="text-2xl font-bold text-gray-900 tracking-tight">에이전트 메모리 제어 (CLAUDE.md)</h2>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 mb-8">
+          <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div class="flex items-center gap-2 mb-4">
+              <i data-lucide="file-text" class="text-violet-600 w-6 h-6"></i>
+              <h3 class="font-bold text-lg">CLAUDE.md 역할</h3>
+            </div>
+            <p class="text-sm text-gray-600 mb-4">에이전트가 대화를 시작할 때마다 자동으로 읽는 지시서이자 정체성을 정의하는 파일입니다.</p>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li><strong class="text-gray-900">위치:</strong> 프로젝트 폴더 루트 또는 홈 디렉토리 (~/.claude/)</li>
+              <li><strong class="text-gray-900">적용:</strong> 해당 폴더에서 실행되는 모든 Claude 세션</li>
+              <li class="bg-violet-50 p-2 rounded text-violet-800 mt-2">💡 이름, 역할, 규칙을 적으면 에이전트가 그대로 따릅니다.</li>
+            </ul>
+          </div>
+          
+          <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div class="flex items-center gap-2 mb-4">
+              <i data-lucide="brain" class="text-blue-600 w-6 h-6"></i>
+              <h3 class="font-bold text-lg">Auto Memory</h3>
+            </div>
+            <p class="text-sm text-gray-600 mb-4">대화 중 중요한 내용을 에이전트가 스스로 판단해 `MEMORY.md`에 자동 기록합니다.</p>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li><strong class="text-gray-900">강제 기록:</strong> "이걸 기억해줘"라고 명령 시 즉시 저장</li>
+              <li><strong class="text-gray-900">효과:</strong> 대화가 길어져도 AI가 맥락을 잊지 않도록 방지</li>
+              <li><strong class="text-gray-900">확인:</strong> <code class="bg-gray-100 px-1 rounded text-orange-600">/memory</code> 입력 시 로드된 메모리 목록 표시</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 실습 파트 -->
+        <div class="rounded-xl border border-violet-200 bg-violet-50/50 p-6 shadow-sm">
+          <h3 class="font-bold text-lg mb-4 text-violet-900 flex items-center gap-2">
+            <i data-lucide="edit" class="w-5 h-5"></i> 메모리 제어 실습
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+              <div class="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
+                 <p class="font-bold text-gray-900 flex items-center gap-2">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-violet-100 text-violet-700 text-xs">1</span>
+                    claude.md 파일 생성 실습
+                 </p>
+              </div>
+              <p class="text-sm font-bold text-gray-800 mb-2 mt-2">1-1. 현재 상태 확인 실습</p>
+              <p class="text-xs text-gray-600 mb-2">프롬프트: <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-800 border border-gray-200">너는 누구야?</code></p>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+              <div class="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
+                 <p class="font-bold text-gray-900 flex items-center gap-2">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-violet-100 text-violet-700 text-xs">2</span>
+                    /init 을 활용한 실습
+                 </p>
+                 <a href="https://drive.google.com/drive/folders/1LNeAHl5nSbP26XlN52DVbGkGBeqwJrjK?usp=drive_link" target="_blank" rel="noreferrer" class="flex items-center gap-1.5 text-xs font-bold bg-blue-50 border border-blue-200 text-blue-700 px-3 py-1.5 rounded-md hover:bg-blue-100 transition-colors shadow-sm cursor-pointer">
+                    <i data-lucide="download" class="w-3.5 h-3.5 pointer-events-none"></i> 예제 파일 다운로드
+                 </a>
+              </div>
+              <p class="text-xs text-gray-600 mb-3 mt-2">작업 폴더를 분석하여 CLAUDE.md 초안을 자동으로 생성합니다.</p>
+              <div class="mb-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-900 shadow-sm">
+                <div class="flex items-center justify-between bg-gray-800 px-4 py-2">
+                  <span class="text-xs font-medium text-gray-400">명령어</span>
+                  <button type="button" onclick="copyCode(this)" class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-300 transition hover:bg-gray-700 hover:text-white cursor-pointer z-20">
+                    <span class="default-state flex items-center gap-1.5"><i data-lucide="copy" class="w-3.5 h-3.5 pointer-events-none"></i>복사</span>
+                    <span class="copied-state flex items-center gap-1.5 hidden"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400 pointer-events-none"></i>복사됨</span>
+                  </button>
+                </div>
+                <div class="overflow-x-auto p-4 text-sm font-mono text-green-400"><pre><code>/init</code></pre></div>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+              <p class="text-sm font-bold text-gray-800 mb-2">3. 대화 내역 지우고 변화 확인</p>
+              <div class="mb-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-900 shadow-sm">
+                <div class="flex items-center justify-between bg-gray-800 px-4 py-2">
+                  <span class="text-xs font-medium text-gray-400">명령어</span>
+                  <button type="button" onclick="copyCode(this)" class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-300 transition hover:bg-gray-700 hover:text-white cursor-pointer z-20">
+                    <span class="default-state flex items-center gap-1.5"><i data-lucide="copy" class="w-3.5 h-3.5 pointer-events-none"></i>복사</span>
+                    <span class="copied-state flex items-center gap-1.5 hidden"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400 pointer-events-none"></i>복사됨</span>
+                  </button>
+                </div>
+                <div class="overflow-x-auto p-4 text-sm font-mono text-green-400"><pre><code>/clear</code></pre></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: 파일 읽기/쓰기/수정 -->
+      <section>
+        <div class="mb-6 flex items-center gap-3 border-b border-gray-200 pb-4">
+          <span class="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">핵심 툴</span>
+          <h2 class="text-2xl font-bold text-gray-900 tracking-tight">파일 제어 (Read / Write / Edit)</h2>
+        </div>
+
+        <!-- READ 툴 -->
+        <div class="mb-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+            <h3 class="font-bold text-xl flex items-center gap-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">READ</span> 파일 읽기</h3>
+            <a href="https://drive.google.com/drive/folders/1DeCZ96SywrWc1KM-8JpDSqi3UT9o7K5Y?usp=drive_link" target="_blank" rel="noreferrer" class="flex items-center gap-1.5 text-xs font-bold bg-blue-50 border border-blue-200 text-blue-700 px-3 py-1.5 rounded-md hover:bg-blue-100 transition-colors shadow-sm cursor-pointer w-fit">
+              <i data-lucide="download" class="w-3.5 h-3.5 pointer-events-none"></i> 예제 파일 다운로드
+            </a>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">텍스트(.txt, .py 등), 이미지(.jpg, .png 등), PDF(최대 100p/20MB) 등 확장자 제한 없이 파일 내용을 읽어 분석합니다. 에이전트가 자동 판단하여 툴을 사용합니다.</p>
+          
+          <div class="space-y-4">
+            <div class="bg-gray-100 rounded-lg p-4 border border-gray-200">
+              <ul class="text-sm text-gray-700 space-y-2">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-blue-600 mt-0.5 shrink-0"></i>
+                  <span><strong>예시 1 :</strong> ~~경로의 파일 읽어서 파일을 적절한 이름으로 수정해줘</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-blue-600 mt-0.5 shrink-0"></i>
+                  <span><strong>예시 2 :</strong> ~파일 열어서 분석 후 정리해줘</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- WRITE 툴 -->
+        <div class="mb-8">
+          <h3 class="font-bold text-xl mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-sm">WRITE</span> 새 파일 생성</h3>
+          <p class="text-gray-600 text-sm mb-4">새로운 텍스트 기반 파일을 만들 때 사용합니다. <span class="text-red-500 font-bold">주의: 기존 파일이 있으면 덮어쓰기(전체 교체)를 합니다.</span></p>
+          
+          <div class="space-y-4">
+            <!-- 하단 예시 문구 -->
+            <div class="bg-gray-100 rounded-lg p-4 border border-gray-200">
+              <ul class="text-sm text-gray-700 space-y-2">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0"></i>
+                  <span><strong>예시 1 :</strong> hello.txt 파일 만들고 자기소개서 작성해줘</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0"></i>
+                  <span><strong>예시 2 :</strong> 자기소개서.docx 파일 만들고 자기소개서 작성해줘</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT 툴 -->
+        <div>
+          <h3 class="font-bold text-xl mb-3 flex items-center gap-2"><span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">EDIT</span> 파일 수정</h3>
+          <p class="text-gray-600 text-sm mb-4">파일 전체를 교체하지 않고 특정 부분만 정밀하게 변경합니다. 수정 전/후 내용을 비교하여 반영하므로 매우 안전합니다.</p>
+          
+          <div class="space-y-4">
+            <div class="bg-gray-100 rounded-lg p-4 border border-gray-200">
+              <ul class="text-sm text-gray-700 space-y-2">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-orange-600 mt-0.5 shrink-0"></i>
+                  <span><strong>예시 1 :</strong> hello.txt 첫 줄을 '수정된 첫 줄'로 바꿔줘</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-orange-600 mt-0.5 shrink-0"></i>
+                  <span><strong>예시 2 :</strong> CLAUDE.md에 항상 존댓말 사용 규칙 추가해줘</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: 시스템 제어 (Bash) -->
+      <section>
+        <div class="mb-6 flex items-center gap-3 border-b border-gray-200 pb-4">
+          <span class="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">운영체제 연동</span>
+          <h2 class="text-2xl font-bold text-gray-900 tracking-tight">터미널 명령어 제어 (Bash / PowerShell 툴)</h2>
+        </div>
+
+        <p class="text-lg text-gray-600 mb-6">터미널 명령어를 에이전트가 직접 실행하여 Read/Write/Edit으로 불가능한 폴더 관리, 앱 실행, 패키지 설치 등을 처리합니다.</p>
+
+        <!-- Bash vs PowerShell 차이점 추가 -->
+        <div class="grid sm:grid-cols-2 gap-4 mb-8">
+          <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-blue-500">
+            <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <i data-lucide="terminal-square" class="w-4 h-4 text-blue-600"></i> Bash
+            </h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Linux, macOS의 기본 셸 (명령줄 인터페이스)</li>
+              <li>• 텍스트 기반 처리에 강하며, 간결한 명령어 구조를 가짐</li>
+            </ul>
+          </div>
+          <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-sky-500">
+            <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <i data-lucide="terminal" class="w-4 h-4 text-sky-600"></i> PowerShell
+            </h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Windows 환경에 최적화된 강력한 자동화 및 스크립팅 도구</li>
+              <li>• .NET 프레임워크 기반으로, 객체(Object) 단위로 데이터를 처리함</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid gap-6 mb-8">
+          <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h3 class="font-bold text-lg mb-4 text-gray-800">폴더 및 시스템 실습</h3>
+            
+            <div class="space-y-4">
+              <!-- 예시 목록으로 변경 -->
+              <div class="bg-gray-100 rounded-lg p-4 border border-gray-200">
+                <div class="mb-3">
+                  <h4 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-200 pb-1">폴더 생성</h4>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-500 mt-0.5 shrink-0"></i>
+                      <span>work 폴더 만들고 그 안에 docs 폴더 제작해</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div class="mb-3">
+                  <h4 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-200 pb-1">이동, 복사, 제거</h4>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-500 mt-0.5 shrink-0"></i>
+                      <span>note.txt를 docs폴더로 이동</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-500 mt-0.5 shrink-0"></i>
+                      <span>복사해서 docs 폴더에 이동시키고 파일명을 backup.txt로 변경</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-500 mt-0.5 shrink-0"></i>
+                      <span>note.txt 파일 삭제</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-200 pb-1">크롬 실행</h4>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-500 mt-0.5 shrink-0"></i>
+                      <span>크롬 실행 후 00계정 선택한 후 특정 페이지 열어줘</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+      
+    </div> <!-- End of content-day2 -->
+
   </main>
 
-  <!-- Auth & Custom Modals (기존 유지) -->
+  <!-- Auth & Custom Modals -->
   <div id="auth-modal" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
     <div class="bg-white rounded-xl shadow-2xl p-6 w-80 max-w-[90%] transform transition-all">
       <h3 class="text-lg font-bold text-gray-900 mb-2">강사 모드 활성화</h3>
@@ -818,7 +1177,7 @@
     </div>
   </div>
 
-  <!-- AI Agent Details Modal (새로 추가된 "더보기" 모달) -->
+  <!-- AI Agent Details Modal -->
   <div id="agent-details-modal" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity p-4">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform transition-all">
       
@@ -979,14 +1338,6 @@
       </div>
     </div>
   </div>
-  
-  <!-- 간단한 모달 스크롤바 CSS -->
-  <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #d8b4fe; border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #c084fc; }
-  </style>
 
   <!-- Scripts -->
   <script>
@@ -994,29 +1345,69 @@
     lucide.createIcons();
 
     // Render Navigation Days
+    let currentDay = 1;
     const days = [1, 2, 3, 4, 5, 6, 7, 8];
     const navContainer = document.getElementById('day-nav');
-    days.forEach(day => {
-      const btn = document.createElement('button');
-      btn.disabled = day > 1; // Only Day 1 is active
+    
+    function renderNav() {
+      navContainer.innerHTML = '';
+      days.forEach(day => {
+        const btn = document.createElement('button');
+        const isActive = day === currentDay;
+        const isAvailable = day <= 2; // 현재 1, 2일차만 활성화
+        
+        btn.disabled = !isAvailable;
+        btn.onclick = () => switchDay(day);
+        
+        let baseClass = 'shrink-0 md:w-full text-left px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between border md:border-none outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1 ';
+        
+        if (isActive) {
+          baseClass += 'bg-violet-100 text-violet-800 border-violet-200 md:bg-violet-50 md:text-violet-700 shadow-sm md:shadow-none';
+        } else if (isAvailable) {
+          baseClass += 'text-gray-600 bg-white md:bg-transparent hover:bg-gray-50 border-gray-100 cursor-pointer';
+        } else {
+          baseClass += 'cursor-not-allowed text-gray-400 bg-white md:bg-transparent hover:bg-gray-50 border-gray-100';
+        }
+        
+        btn.className = baseClass;
+        
+        btn.innerHTML = `
+          <span class="flex items-center gap-2">
+            <span>${day}일차</span>
+          </span>
+          ${!isAvailable ? '<span class="text-[10px] font-normal px-2 py-0.5 bg-gray-100 text-gray-500 rounded-md ml-2 border border-gray-200 shrink-0">예정</span>' : '<i data-lucide="chevron-right" class="w-4 h-4 hidden md:block opacity-50 shrink-0"></i>'}
+        `;
+        navContainer.appendChild(btn);
+      });
+      lucide.createIcons();
+    }
+
+    function switchDay(day) {
+      if (day > 2) return;
+      currentDay = day;
       
-      let baseClass = 'shrink-0 md:w-full text-left px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between border md:border-none outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1 ';
+      renderNav();
       
-      if (day === 1) {
-        baseClass += 'bg-violet-100 text-violet-800 border-violet-200 md:bg-violet-50 md:text-violet-700 shadow-sm md:shadow-none';
-      } else {
-        baseClass += 'cursor-not-allowed text-gray-400 bg-white md:bg-transparent hover:bg-gray-50 border-gray-100';
+      const day1 = document.getElementById('content-day1');
+      const day2 = document.getElementById('content-day2');
+
+      if (day1) day1.classList.add('hidden');
+      if (day2) day2.classList.add('hidden');
+      
+      const targetContent = document.getElementById('content-day' + day);
+      if (targetContent) targetContent.classList.remove('hidden');
+
+      if (typeof loadMemoForDay === 'function') {
+        loadMemoForDay(day);
+        const editArea = document.getElementById('instructor-memo-edit-area');
+        const displayArea = document.getElementById('instructor-memo-display');
+        
+        if (editArea) editArea.classList.add('hidden');
+        if (displayArea) displayArea.classList.remove('hidden');
       }
-      
-      btn.className = baseClass;
-      btn.innerHTML = `
-        <span class="flex items-center gap-2">
-          <span>${day}일차</span>
-        </span>
-        ${day > 1 ? '<span class="text-[10px] font-normal px-2 py-0.5 bg-gray-100 text-gray-500 rounded-md ml-2 border border-gray-200 shrink-0">예정</span>' : '<i data-lucide="chevron-right" class="w-4 h-4 hidden md:block opacity-50 shrink-0"></i>'}
-      `;
-      navContainer.appendChild(btn);
-    });
+    }
+    
+    renderNav();
 
     // OS Tab Logic
     function setOS(os) {
@@ -1044,25 +1435,30 @@
       }
     }
 
-    // --- 강사 메모 및 수정 모드 (Instructor Mode) 로직 ---
     let isInstructorMode = false;
     
-    // 페이지 로드 시 기존 강사 메모 불러오기
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedMemo = localStorage.getItem('instructorMemo_day1');
+    function loadMemoForDay(day) {
+      const savedMemo = localStorage.getItem('instructorMemo_day' + day);
       const display = document.getElementById('instructor-memo-display');
       const editBtn = document.getElementById('edit-memo-btn');
+      const input = document.getElementById('instructor-memo-input');
       
       if (savedMemo && savedMemo.trim() !== '') {
         display.textContent = savedMemo;
         display.classList.remove('text-gray-400');
         editBtn.innerHTML = '<i data-lucide="edit-3" class="w-3.5 h-3.5 pointer-events-none"></i> 메모 수정';
+        if (input) input.value = savedMemo;
       } else {
         display.textContent = "아직 등록된 메모가 없습니다.";
         display.classList.add('text-gray-400');
         editBtn.innerHTML = '<i data-lucide="plus" class="w-3.5 h-3.5 pointer-events-none"></i> 메모 추가';
+        if (input) input.value = "";
       }
-      lucide.createIcons(); // 아이콘 갱신
+      lucide.createIcons();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadMemoForDay(currentDay);
     });
 
     function promptEditMode() {
@@ -1071,7 +1467,6 @@
         document.getElementById('exit-modal').classList.add('flex');
         return;
       }
-      // 팝업 차단을 우회하기 위한 커스텀 모달 띄우기
       document.getElementById('auth-password').value = '';
       document.getElementById('auth-error').classList.add('hidden');
       document.getElementById('auth-modal').classList.remove('hidden');
@@ -1092,7 +1487,6 @@
         const editBtn = document.getElementById('edit-memo-btn');
         editBtn.classList.remove('hidden');
         editBtn.classList.add('flex');
-        // 톱니바퀴 버튼 시각적 활성화 표시
         const settingsBtn = document.querySelector('button[title="강사 모드 설정"]');
         settingsBtn.classList.add('bg-violet-100', 'text-violet-700');
       } else {
@@ -1115,7 +1509,6 @@
       const settingsBtn = document.querySelector('button[title="강사 모드 설정"]');
       settingsBtn.classList.remove('bg-violet-100', 'text-violet-700');
       
-      // 열려있는 수정창 닫기
       document.getElementById('instructor-memo-edit-area').classList.add('hidden');
       document.getElementById('instructor-memo-display').classList.remove('hidden');
     }
@@ -1126,13 +1519,11 @@
       const input = document.getElementById('instructor-memo-input');
       
       if (editArea.classList.contains('hidden')) {
-        // 열기 전 기존 텍스트 불러오기
         input.value = (display.textContent === "아직 등록된 메모가 없습니다.") ? "" : display.textContent;
         display.classList.add('hidden');
         editArea.classList.remove('hidden');
         input.focus();
       } else {
-        // 취소/닫기
         display.classList.remove('hidden');
         editArea.classList.add('hidden');
       }
@@ -1152,21 +1543,17 @@
         display.classList.remove('text-gray-400');
         editBtn.innerHTML = '<i data-lucide="edit-3" class="w-3.5 h-3.5 pointer-events-none"></i> 메모 수정';
       }
-      lucide.createIcons(); // 텍스트 변경 후 아이콘 갱신
+      lucide.createIcons();
       
-      // 로컬 스토리지에 저장하여 새로고침 시 유지되도록 함
-      localStorage.setItem('instructorMemo_day1', inputVal);
+      localStorage.setItem('instructorMemo_day' + currentDay, inputVal);
       
-      // 저장 후 보기 모드로 전환
       toggleMemoEdit();
     }
 
-    // --- 더보기 모달 제어 로직 ---
     function openAgentDetailsModal() {
       const modal = document.getElementById('agent-details-modal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      // 모달 열 때 아이콘 생성되도록 처리 (새로 렌더링 된 요소용)
       setTimeout(() => lucide.createIcons(), 10);
     }
 
@@ -1176,12 +1563,10 @@
       modal.classList.remove('flex');
     }
 
-    // --- Copy to Clipboard Logic ---
-    function copyCode(btn) {
-      const codeElement = btn.closest('.mb-4').querySelector('pre code');
-      const textToCopy = codeElement.innerText;
+    function copyHiddenCode(btn, targetId) {
+      const hiddenTextArea = document.getElementById(targetId);
+      const textToCopy = hiddenTextArea.value;
 
-      // iFrame 환경 호환성을 위해 항상 document.execCommand('copy') 사용
       let textArea = document.createElement("textarea");
       textArea.value = textToCopy;
       textArea.style.position = "fixed";
@@ -1193,7 +1578,33 @@
       try { document.execCommand('copy'); } catch (err) { console.error(err); }
       textArea.remove();
 
-      // UI update
+      const defaultState = btn.querySelector('.default-state');
+      const copiedState = btn.querySelector('.copied-state');
+      
+      defaultState.classList.add('hidden');
+      copiedState.classList.remove('hidden');
+
+      setTimeout(() => {
+        defaultState.classList.remove('hidden');
+        copiedState.classList.add('hidden');
+      }, 2000);
+    }
+
+    function copyCode(btn) {
+      const codeElement = btn.closest('.mb-4').querySelector('pre code');
+      const textToCopy = codeElement.innerText;
+
+      let textArea = document.createElement("textarea");
+      textArea.value = textToCopy;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try { document.execCommand('copy'); } catch (err) { console.error(err); }
+      textArea.remove();
+
       const defaultState = btn.querySelector('.default-state');
       const copiedState = btn.querySelector('.copied-state');
       
